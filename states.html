@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+
+	<title>States</title>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+
+
+
+
+	<style>#map{ width: 98vw; height: 98vh;} .popup_value{padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; font-size: 16px;} .statename{background-color: red; color: white;  padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; text-transform: uppercase; font-size: 16px;} .info{background-color: white;}
+ </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+<script type="text/javascript" src="states.js"></script>
+
+<script type="text/javascript">
+
+	var map = L.map('map',  { zoomControl:false }).setView([22.8,79.0], 4);
+
+	// control that shows state info on hover
+	var info = L.control();
+
+	info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+
+	info.update = function (props) {
+
+		this._div.innerHTML = (props ?
+			'<p class="statename">'+props.ST_NM+'</p><p class="popup_value"> Dry Laterines : <strong> '+props.ST_DL+'</strong></p><p class="popup_value"> Sewer Cleaners : <strong>'+props.ST_SW+'</strong></p><p class="popup_value"> Railway Cleaners : <strong>'+props.ST_RL+'</strong></p><p class="popup_value"> Deaths Reported : <strong>'+props.ST_DT+'</strong></p></sup>'
+			: 'Hover over a state');
+
+
+	};
+
+	info.addTo(map);
+
+
+	// get color depending on population density value
+	function getColor(d) {
+		if(d.EVMOrder=='3'){
+		return    d.WinningParty == 'Bharatiya Janata Party' ? '#FFA500' :
+	 d.WinningParty == 'Samajwadi Party' ? '#00FF00' :
+	 d.WinningParty == 'Bahujan Samaj Party' ? '#0000FF' :
+	 d.WinningParty ==  'Rashtriya Lok Dal' ? '#FF0000':
+     d.WinningParty == 'Indian Union Muslim League' ? '#00FF00' :
+     d.WinningParty == 'Kerala Congress (Jacob)' ? '#BD0026' :
+     d.WinningParty == 'Telangana Rashtra Samithi' ? '#BD0026' :
+     d.WinningParty == 'Kerala Congress (M)' ? '#BD0026' :
+     d.WinningParty == 'Asom Gana Parishad' ? '#BD0026' :
+     d.WinningParty == 'Kerala Congress (B)' ? '#BD0026' :
+     d.WinningParty == 'All India N.R. Congress' ? '#BD0026' :
+     d.WinningParty == 'Communist Marxist Party Kerala State Committee' ? '#FF0000' :
+     d.WinningParty == 'Bodoland Peoples Front' ? '#BD0026' :
+     d.WinningParty == 'All India Anna Dravida Munnetra Kazhagam' ? '#008D3C' :
+     d.WinningParty == 'All India Trinamool Congress' ? '#008D3C' :
+     d.WinningParty == 'Congress (Secular)' ? '#BD0026' :
+     d.WinningParty == 'Janata Dal (Secular)' ? '#008D3C' :
+     d.WinningParty == 'Indian National Congress' ? '#00FF00' :
+     d.WinningParty == 'Communist Party of India (Marxist)' ? '#FF0000' :
+     d.WinningParty == 'All India Forward Bloc' ? '#008D3C' :
+     d.WinningParty == 'Gorkha Janmukti Morcha' ? '#BD0026' :
+     d.WinningParty == 'Revolutionary Socialist Party' ? '#FF0000' :
+     d.WinningParty == 'Independent' ? '#BD0026' :
+     d.WinningParty == 'Dravida Munnetra Kazhagam' ? '#BD0026' :
+     d.WinningParty == 'Nationalist Congress Party' ? '#BD0026' :
+     d.WinningParty == 'Communist Party of India' ? '#FF0000' :
+     d.WinningParty == 'All India United Democratic Front' ? '#BD0026' :
+     d.WinningParty == 'National Secular Conference' ? '#BD0026' :
+     d.WinningParty == 'Shiromani Akali Dal' ? '#FFA500':
+     d.WinningParty == 'Aam Aadmi Party' ? '#ffff99':
+
+     d.WinningParty == 'Suheldev Bhartiya Samaj Party' ? '#BD0026':
+     d.WinningParty == 'Apna Dal (Soneylal)' ? '#008D3C':
+     d.WinningParty == 'Grand' ? '#000000':
+
+'#a6a6a6';
+}
+else return '#a6a6a6';
+
+	}
+
+	function style(feature) {
+		return {
+			weight: 1,
+			opacity: 1,
+			color: 'white',
+			dashArray: '1',
+			fillOpacity: 0.4,
+			fillColor: getColor(feature.properties)
+		};
+	}
+
+	function highlightFeature(e) {
+		var layer = e.target;
+
+		layer.setStyle({
+			weight: 5,
+			color: '#fff',
+			dashArray: '',
+			fillOpacity: 0.7
+		});
+
+		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+			layer.bringToFront();
+		}
+
+		info.update(layer.feature.properties);
+	}
+
+	var geojson;
+
+	function resetHighlight(e) {
+		geojson.resetStyle(e.target);
+		info.update();
+	}
+
+	function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+
+	geojson = L.geoJson(statesData, {
+		style: style,
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+	map.attributionControl.addAttribution('Data{Meet} &copy; <a href="http://github.com/">DataMeet</a>');
+
+
+	/*var legend = L.control({position: 'bottomright'});
+
+	legend.onAdd = function (map) {
+
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = [0, 10, 20, 50, 100, 200, 500, 1000],
+			labels = [],
+			from, to;
+
+		for (var i = 0; i < grades.length; i++) {
+			from = grades[i];
+			to = grades[i + 1];
+
+			labels.push(
+				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+'));
+		}
+
+		div.innerHTML = labels.join('<br>');
+		return div;
+	};*/
+
+	legend.addTo(map);
+
+</script>
+
+
+
+</body>
+</html>
