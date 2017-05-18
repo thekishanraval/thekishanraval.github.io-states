@@ -48,7 +48,7 @@
 	var onClose = function () {
 		info.remove();
 	};
-	var smallScreen = (window.innerWidth <= 800 || window.innerHeight <= 600) ? 4.2 : 4.8;
+	var smallScreen = (window.innerWidth <= 800 || window.innerHeight <= 600) ? 4.0 : 4.9;
 
 	var map = L.map('map',  { scrollWheelZoom: false, zoomDelta: 0.25, zoomSnap:0, zoomControl:false }).setView([23.8,81.8], smallScreen);
 
