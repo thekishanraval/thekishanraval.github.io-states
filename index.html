@@ -6,7 +6,7 @@
 	<title>States</title>
 
 	<meta charset="utf-8" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
@@ -16,7 +16,20 @@
 
 
 
-	<style>#map{ width: 98vw; height: 95vh;} .popup_value{padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; font-size: 16px;} .statename{background-color: red; color: white;  padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; text-transform: uppercase; font-size: 16px;} .info{background-color: white;}
+	<style>#map{ width: 98vw; height: 95vh;} .popup_value{padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; font-size: 1.5em;} .statename{background-color: red; color: white;  padding-left: 5%; padding-right: 5%; padding-top: 5%; padding-bottom: 5%; margin-top: 0px; margin-bottom: 0px; font-weight: 900; font-family: lato; text-transform: uppercase; font-size: 1.5em;} .info{background-color: white;}
+
+	@media(max-width: 500px) {
+		.info.leaflet-control {
+			font-size: 8px;
+		}
+	}
+
+	.close {
+		float: right;
+		margin-top: -17px;
+		margin-right: -6px;
+		font-size: 1.4rem;
+	}
  </style>
 </head>
 <body>
@@ -31,12 +44,12 @@
 			ST_DL: ""
 		};
 
-	var map = L.map('map',  { scrollWheelZoom: false, zoomDelta: 0.25, zoomSnap:0, zoomControl:false }).setView([23.8,78.8], 5.0);
+	var map = L.map('map',  { scrollWheelZoom: false, zoomDelta: 0.25, zoomSnap:0, zoomControl:false }).setView([23.8,78.8], 4.5);
 
 	L.control.zoom({ position: 'bottomleft'}).addTo(map);
 
 	// control that shows state info on hover
-	var info = L.control();
+	var info = L.control({ position: 'bottomright'});
 
 	info.onAdd = function (map) {
 		this._div = L.DomUtil.create('div', 'info');
@@ -47,7 +60,7 @@
 	info.update = function (props) {
 
 		this._div.innerHTML = (props ?
-			'<p class="statename">'+props.ST_NM+'</p><p class="popup_value"> Dry Laterines : <strong> '+props.ST_DL+'</strong></p><p class="popup_value"> Sewer Cleaners : <strong>'+props.ST_SW+'</strong></p><p class="popup_value"> Railway Cleaners : <strong>'+props.ST_RL+'</strong></p><p class="popup_value"> Deaths Reported : <strong>'+props.ST_DT+'</strong></p></sup>'
+			'<p class="statename">'+props.ST_NM+'  <span class="close"> &times; </span></p><p class="popup_value"> Dry Laterines : <strong> '+props.ST_DL+'</strong></p><p class="popup_value"> Sewer Cleaners : <strong>'+props.ST_SW+'</strong></p><p class="popup_value"> Railway Cleaners : <strong>'+props.ST_RL+'</strong></p><p class="popup_value"> Deaths Reported : <strong>'+props.ST_DT+'</strong></p></sup>'
 			: 'Hover over a state');
 
 
@@ -147,32 +160,6 @@
 	}).addTo(map);
 
 	map.attributionControl.addAttribution('Data{Meet} &copy; <a href="http://datameet.org/">DataMeet</a>');
-
-
-	/*var legend = L.control({position: 'bottomright'});
-
-	legend.onAdd = function (map) {
-
-		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-			labels = [],
-			from, to;
-
-		for (var i = 0; i < grades.length; i++) {
-			from = grades[i];
-			to = grades[i + 1];
-
-			labels.push(
-				'<i style="background:' + getColor(from + 1) + '"></i> ' +
-				from + (to ? '&ndash;' + to : '+'));
-		}
-
-		div.innerHTML = labels.join('<br>');
-		return div;
-	};
-
-	legend.addTo(map);
-	*/
 
 </script>
 
