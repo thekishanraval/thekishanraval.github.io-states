@@ -125,7 +125,11 @@
 
 	function resetHighlight(e) {
 		geojson.resetStyle(e.target);
-		info.update();
+		// Add India Info
+		info.update({
+			ST_NM: "India",
+			ST_DL: ""
+		});
 	}
 
 	function onEachFeature(feature, layer) {
