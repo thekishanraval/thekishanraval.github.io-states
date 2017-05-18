@@ -44,6 +44,11 @@
 			ST_DL: ""
 		};
 
+
+	var onClose = function () {
+		info.remove();
+	};
+
 	var map = L.map('map',  { scrollWheelZoom: false, zoomDelta: 0.25, zoomSnap:0, zoomControl:false }).setView([23.8,78.8], 4.5);
 
 	L.control.zoom({ position: 'bottomleft'}).addTo(map);
@@ -53,15 +58,14 @@
 
 	info.onAdd = function (map) {
 		this._div = L.DomUtil.create('div', 'info');
-		this.update(indiaDetails);
+		this.update(this._layerDetails ? this._layerDetails : undefined);
 		return this._div;
 	};
 
 	info.update = function (props) {
+		props = props ? props : indiaDetails;
 
-		this._div.innerHTML = (props ?
-			'<p class="statename">'+props.ST_NM+'  <span class="close"> &times; </span></p><p class="popup_value"> Dry Laterines : <strong> '+props.ST_DL+'</strong></p><p class="popup_value"> Sewer Cleaners : <strong>'+props.ST_SW+'</strong></p><p class="popup_value"> Railway Cleaners : <strong>'+props.ST_RL+'</strong></p><p class="popup_value"> Deaths Reported : <strong>'+props.ST_DT+'</strong></p></sup>'
-			: 'Hover over a state');
+		this._div.innerHTML = ('<p class="statename">'+props.ST_NM+'  <span class="close" onclick="onClose()"> &times; </span></p><p class="popup_value"> Dry Laterines : <strong> '+props.ST_DL+'</strong></p><p class="popup_value"> Sewer Cleaners : <strong>'+props.ST_SW+'</strong></p><p class="popup_value"> Railway Cleaners : <strong>'+props.ST_RL+'</strong></p><p class="popup_value"> Deaths Reported : <strong>'+props.ST_DT+'</strong></p></sup>');
 
 
 	};
@@ -134,16 +138,19 @@
 		if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
 			layer.bringToFront();
 		}
-
-		info.update(layer.feature.properties);
+		if (!info._map) {
+			info._layerDetails = layer.feature.properties;
+			info.addTo(map);
+		} else {
+			info.update(layer.feature.properties);
+		}
 	}
 
 	var geojson;
 
 	function resetHighlight(e) {
 		geojson.resetStyle(e.target);
-		// Add India Info
-		info.update(indiaDetails);
+		info.update();
 	}
 
 	function onEachFeature(feature, layer) {
