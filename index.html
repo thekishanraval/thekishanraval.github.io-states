@@ -26,6 +26,10 @@
 <script type="text/javascript" src="states.js"></script>
 
 <script type="text/javascript">
+	var indiaDetails = {
+			ST_NM: "India",
+			ST_DL: ""
+		};
 
 	var map = L.map('map',  { scrollWheelZoom: false, zoomDelta: 0.25, zoomSnap:0, zoomControl:false }).setView([23.8,78.8], 5.0);
 
@@ -36,7 +40,7 @@
 
 	info.onAdd = function (map) {
 		this._div = L.DomUtil.create('div', 'info');
-		this.update();
+		this.update(indiaDetails);
 		return this._div;
 	};
 
@@ -126,10 +130,7 @@
 	function resetHighlight(e) {
 		geojson.resetStyle(e.target);
 		// Add India Info
-		info.update({
-			ST_NM: "India",
-			ST_DL: ""
-		});
+		info.update(indiaDetails);
 	}
 
 	function onEachFeature(feature, layer) {
